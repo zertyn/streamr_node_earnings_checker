@@ -9,3 +9,6 @@ Simple Python script that shows basic statistics of your node earnings.
 - bs4
 - requests
 - datetime (installed by default on most systems).
+
+<b>Example output:</b>
+![example_output](https://user-images.githubusercontent.com/38588045/155888214-bd732a6b-270e-4260-9ddc-a2c2fb9fa23f.png)
