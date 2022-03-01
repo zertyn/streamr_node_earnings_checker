@@ -14,3 +14,9 @@ Simple Python script that shows basic statistics of your node earnings.
 <b>Sample output:</b> <br><br>
 ![sample](https://user-images.githubusercontent.com/38588045/156030562-11353eb4-5a91-43ef-870d-e9c00b35942e.png)
 
+How to run:
+```
+git clone https://github.com/zertyn/streamr_node_earnings_checker.git
+cd streamr_node_earnings_checker/
+python3 data_earnings_checker.py
+```
