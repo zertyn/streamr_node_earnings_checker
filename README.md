@@ -14,7 +14,7 @@ Simple Python script that shows basic statistics of your node earnings.
 
 
 <b>Sample output:</b> <br><br>
-![sample](https://user-images.githubusercontent.com/38588045/156030562-11353eb4-5a91-43ef-870d-e9c00b35942e.png)
+![image](https://user-images.githubusercontent.com/38588045/156255338-29e2fd5a-8d32-462d-bb7b-56ff736d2ac4.png)
 
 <b>How to run:</b>
 ```
