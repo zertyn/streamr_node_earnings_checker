@@ -2,9 +2,9 @@
 Simple Python script that shows basic statistics of your node earnings.
 
 <b>Only things to change:</b>
-- Add your node addresses in the addresses list.
-- Add your mining start date in the datetime (year, month, day, hour, minute). 
-- Add in which interval you would like to loop the script in script_frequency (default = 3600, once per hour).
+- Add your node addresses in the variable list ```addresses```.
+- Add your mining start date in the ```datetime``` (year, month, day, hour, minute). 
+- Add in which interval you would like to loop the script by chaning the variable ```script_frequency``` (default = 3600, once per hour).
 
 <b>Requires the following imports to be installed:</b>
 - requests
