@@ -5,7 +5,7 @@ Simple Python script that shows basic statistics of your node earnings.<br>
 
 <b>v1.2: Only things to change:</b>
 - Add your node addresses in the dictionary ```addresses```.
-- optional: Add in which interval you would like to loop the script by chaning the variable ```script_frequency``` (default = 3600, once per hour).
+- Optional: add in which interval you would like to loop the script by chaning the variable ```output_frequency``` (default = 3600, once per hour).
 
 <b>Requires the following imports to be installed:</b>
 - requests
@@ -16,7 +16,7 @@ Simple Python script that shows basic statistics of your node earnings.<br>
 <b>Sample output:</b> <br><br>
 ![image](https://user-images.githubusercontent.com/38588045/156552210-f862cdfc-1666-4c63-a585-8fc6ca9b0155.png)
 
-<b>How to run:</b>
+<b>How to run (presuming you have installed the required packages via pip already):</b>
 ```
 git clone https://github.com/zertyn/streamr_node_earnings_checker.git
 cd streamr_node_earnings_checker/
