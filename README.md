@@ -1,10 +1,11 @@
 # streamr_node_earnings_checker
-Simple Python script that shows basic statistics of your node earnings.
+Simple Python script that shows basic statistics of your node earnings.<br>
+&emsp; <b>Help a poor student in need 😁: </b><br>
+&emsp; Donations are very welcome (ETH, DATA): 0x720D3842198A21403482C919841B81958B5220e1 (Polygon and Etherium chain)
 
-<b>Only things to change:</b>
-- Add your node addresses in the variable list ```addresses```.
-- Add your mining start date in the ```datetime``` (year, month, day, hour, minute). 
-- Add in which interval you would like to loop the script by chaning the variable ```script_frequency``` (default = 3600, once per hour).
+<b>v1.2: Only things to change:</b>
+- Add your node addresses in the dictionary ```addresses```.
+- optional: Add in which interval you would like to loop the script by chaning the variable ```script_frequency``` (default = 3600, once per hour).
 
 <b>Requires the following imports to be installed:</b>
 - requests
@@ -12,9 +13,8 @@ Simple Python script that shows basic statistics of your node earnings.
 - apscheduler
 - datetime (installed by default on most systems).
 
-
 <b>Sample output:</b> <br><br>
-![image](https://user-images.githubusercontent.com/38588045/156255338-29e2fd5a-8d32-462d-bb7b-56ff736d2ac4.png)
+![image](https://user-images.githubusercontent.com/38588045/156552210-f862cdfc-1666-4c63-a585-8fc6ca9b0155.png)
 
 <b>How to run:</b>
 ```
