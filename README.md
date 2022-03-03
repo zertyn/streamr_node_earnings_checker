@@ -1,7 +1,7 @@
 # streamr_node_earnings_checker
 Simple Python script that shows basic statistics of your node earnings.<br>
 &emsp; <b>Help a poor student in need 😁: </b><br>
-&emsp; Donations are very welcome (ETH, DATA): 0x720D3842198A21403482C919841B81958B5220e1 (Polygon and Etherium chain)
+&emsp; Donations are very welcome (DATA, ETH): 0x720D3842198A21403482C919841B81958B5220e1 (Polygon and Etherium chain)
 
 <b>v1.2: Only things to change:</b>
 - Add your node addresses in the dictionary ```addresses```.
