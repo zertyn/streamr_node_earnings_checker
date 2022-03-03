@@ -22,7 +22,7 @@ git clone https://github.com/zertyn/streamr_node_earnings_checker.git
 cd streamr_node_earnings_checker/
 python3 data_earnings_checker.py
 ```
-<b>Want this code in .exe format? Follow the following link:</b>
+<b>Want this code in .exe format? Follow the following link:</b><br>
 https://towardsdatascience.com/how-to-easily-convert-a-python-script-to-an-executable-file-exe-4966e253c7e9
 
 Make sure the config file is in the same folder as the .exe file.
