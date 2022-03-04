@@ -19,7 +19,7 @@ Donations are very welcome (DATA, ETH): 0x720D3842198A21403482C919841B81958B5220
 
 <h4><b>Sample output</b> <br><br></h4>
 
-![image](https://user-images.githubusercontent.com/38588045/156552210-f862cdfc-1666-4c63-a585-8fc6ca9b0155.png)
+![image](https://user-images.githubusercontent.com/38588045/156774623-0d89bf2d-b1cc-4fef-bb6a-02bd0d6118fc.png)
 
 
 <h4><b>How to run (presuming you have installed the required packages via pip already) </b></h4>
