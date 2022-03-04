@@ -4,10 +4,11 @@ Simple Python script that shows basic statistics of your node earnings.<br>
 Donations are very welcome (DATA, ETH): 0x720D3842198A21403482C919841B81958B5220e1 (Polygon and Etherium chain)
 <br
 <h4><b>Only things to change</b></h4>
+
 - Add your node addresses in the ```nodes.json``` file.
 - Optional: add in which interval you would like to loop the script by chaning the variable ```output_frequency``` (default = 3600, once per hour).
 
-<br>
+
 <h4><b>Requires the following imports to be installed</b></h4>
 
 - requests
@@ -30,7 +31,7 @@ python3 data_earnings_checker.py
 ```
 
 <h4><b>Want this code in .exe format? </b><br></h4>
-Follow the following link (Make sure the nodes.json file is in the same folder as the .exe file):
+Follow the following link (Make sure the nodes.json file is in the same folder as the .exe file): <br>
 https://towardsdatascience.com/how-to-easily-convert-a-python-script-to-an-executable-file-exe-4966e253c7e9
 
 <br>
