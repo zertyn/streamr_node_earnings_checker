@@ -2,7 +2,7 @@
 Simple Python script that shows basic statistics of your node earnings.<br>
 <b>Help a poor student in need 😁 </b><br>
 Donations are very welcome (DATA, ETH): 0x720D3842198A21403482C919841B81958B5220e1 (Polygon and Etherium chain)
-<br
+<br>
 <h4><b>Only things to change</b></h4>
 
 - Add your node addresses in the ```nodes.json``` file.
