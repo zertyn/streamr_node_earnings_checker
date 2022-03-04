@@ -11,7 +11,7 @@ import requests as rq
 from datetime import datetime
 import json
 from apscheduler.schedulers.blocking import BlockingScheduler
-
+from collections import defaultdict
 
 # function to transform timedelta to propper formatting
 def strfdelta(tdelta, fmt):
@@ -19,7 +19,6 @@ def strfdelta(tdelta, fmt):
     d["hours"], rem = divmod(tdelta.seconds, 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
     return fmt.format(**d)
-
 
 with open('nodes.json', 'r') as f:
     addresses = json.load(f)
@@ -44,11 +43,12 @@ except:
     print ('Make sure to enter your node addresses correctly in nodes.json!')
     exit()
 
-
 def obtain_info():
     # (re)create empty variables and lists to store JSON data
     accumulated_data = 0;
-    data_per_node = [];
+    paid_data = 0;
+    accumulated_per_node = [];
+    paid_per_node = defaultdict(int);
     online_per_node = [];
     last_reward_per_node = [];
     claimpc_per_node = [];
@@ -67,14 +67,31 @@ def obtain_info():
         json_data = json.loads(response.text)
 
         try:
-            data_per_node.append(float(json_data["DATA"]))
+            accumulated_per_node.append(float(json_data["DATA"]))
         except:
-            data_per_node.append(float(0))
+            accumulated_per_node.append(float(1))
         try:
             accumulated_data += float(json_data["DATA"])
         except:
-            accumulated_data += float(0)
+            accumulated_data += float(1)
+            
+        #get amount of paid data in total and per node
+        try:
+            json_data = {
+            'query': '{\n  erc20Transfers(\n    where: {\n      from: "0x3979f7d6b5c5bfa4bcd441b4f35bfa0731ccfaef"\n      to: "' + value.lower() + '"\n      timestamp_gt: "1646065752"\n    }\n  ) {\n    timestamp\n    value\n  }\n}\n',
+                }
 
+            response = rq.post('https://api.thegraph.com/subgraphs/name/streamr-dev/data-on-polygon', json=json_data)
+            json_data = json.loads(response.text)
+            for data in json_data["data"]:
+                paid_data += round(float(json_data["data"]["erc20Transfers"][0]["value"]), 2)
+                paid_per_node[key] += round(float(json_data["data"]["erc20Transfers"][0]["value"]), 2)
+                
+        except:
+            for data in json_data["data"]:
+                paid_data += 0
+                paid_per_node[key] += 0
+                
         # get claimed rewards and reward datetime per node
         response = rq.get(personalnodes_url + value)
         json_data = json.loads(response.text)
@@ -115,6 +132,7 @@ def obtain_info():
     json_data = json.loads(response.text)
     coin_value = float(json_data["USD"])
     rev_total = round(coin_value * accumulated_data, 2)
+    rev_received = round(coin_value * paid_data, 2)
 
     # average revenue per dag and hour, calculated from total revenue up to current date
     rev_day = round(rev_total / mining_days, 2)
@@ -122,9 +140,9 @@ def obtain_info():
 
     # average revenue per dag and hour, calculated from total revenue up to current date
     node_rev_day = round(
-        (((data_per_node[0] * coin_value) / (mining_days * 24 + mining_hours)) * 24) * len(addresses.keys()), 2)
+        (((accumulated_per_node[0] * coin_value) / (mining_days * 24 + mining_hours)) * 24) * len(addresses.keys()), 2)
     node_rev_hour = round(
-        (((data_per_node[0] * coin_value) / (mining_days * 24 + mining_hours))) * len(addresses.keys()), 2)
+        (((accumulated_per_node[0] * coin_value) / (mining_days * 24 + mining_hours))) * len(addresses.keys()), 2)
 
     # old estimates of monthly and yearly revenue, calculated from total revenue up to current date
     est_rev_month = round(rev_total / (mining_days * 24 + mining_hours) * 732, 2)
@@ -132,9 +150,9 @@ def obtain_info():
 
     # new estimates which calculate profits based on the profitability of your first node (assumes every node has equal DATA amount staked)
     node_est_rev_month = round(
-        (((data_per_node[0] * coin_value) / (mining_days * 24 + mining_hours)) * 732) * len(addresses.keys()), 2)
+        (((accumulated_per_node[0] * coin_value) / (mining_days * 24 + mining_hours)) * 732) * len(addresses.keys()), 2)
     node_est_rev_year = round(
-        (((data_per_node[0] * coin_value) / (mining_days * 24 + mining_hours)) * 8772) * len(addresses.keys()), 2)
+        (((accumulated_per_node[0] * coin_value) / (mining_days * 24 + mining_hours)) * 8772) * len(addresses.keys()), 2)
 
     # prints all variables into a nice overview
     print('\n################# STREAMR NODE EARNINGS #################')
@@ -142,9 +160,10 @@ def obtain_info():
     print(f'\n      Total time mined: {mining_time_formatted}')
     print(f'                    Total nodes: {len(addresses)}')
     print('\n______________________ REVENUE __________________________')
-    print(f'\n            Accumulated coins: {round(accumulated_data, 2)} DATA')
-    print(f'                 Total revenue: ${rev_total}\n')
-
+    print(f'\n       Total revenue        {round(accumulated_data, 2)} DATA/ ${rev_total}')
+    print(f'       Received revenue     {round(paid_data, 2)} DATA / ${rev_received} ')
+    print(f'       Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / ${round(rev_total - rev_received, 2)}\n')
+    
     print(f'  Average  | revenue per hour: {round(rev_hour / coin_value, 2)} DATA / ${rev_hour}')
     print(f'   based   | revenue per day:  {round(rev_day / coin_value, 2)} DATA / ${rev_day}\n')
 
@@ -155,10 +174,17 @@ def obtain_info():
 
     for index, address in enumerate(addresses):
         print(
-            f'    Node {index + 1} | Gathered:      {data_per_node[index]} DATA / ${round(data_per_node[index] * coin_value, 2)}')
+            f'    Node {index + 1} | Gathered:      {accumulated_per_node[index]} DATA / ${round(accumulated_per_node[index] * coin_value, 2)}')
+        try:            
+            print(f'           | Paid:          {paid_per_node[address]} DATA / ${round(paid_per_node[address] * coin_value, 2)}')
+            print(f'           | Unpaid:        {round(accumulated_per_node[index] - paid_per_node[address], 2)} DATA / ${round((accumulated_per_node[index] - paid_per_node[address]) * coin_value, 2)}')
+        except:
+            print('           | Paid:          0 DATA / $0')
+            print(f'           | Unpaid:        {accumulated_per_node[index]} DATA / ${round(accumulated_per_node[index] * coin_value, 2)}')
         print(f'           | Status:        {online_per_node[index]}')
         print(f'           | Last reward:   {last_reward_per_node[index]}')
         print(f'           | Claims(%):     {claimpc_per_node[index]}\n')
+        
 
     print('_____________________ ESTIMATES _________________________\n')
 
@@ -170,7 +196,6 @@ def obtain_info():
 
     print(f'\n############ APR: {apr}% ##### APY: {apy}% ############')
     print(f'################# DATA VALUE: ${coin_value} ##################')
-
 
 # runs the function once on startup, after which the scheduler takes over
 obtain_info()
