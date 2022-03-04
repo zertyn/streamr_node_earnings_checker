@@ -6,7 +6,7 @@ Donations are very welcome (DATA, ETH): 0x720D3842198A21403482C919841B81958B5220
 <h4><b>Only things to change</b></h4>
 
 - Add your node addresses in the ```nodes.json``` file.
-- Optional: add in which interval you would like to loop the script by chaning the variable ```output_frequency``` (default = 3600, once per hour).
+- Optional: add in which interval you would like to loop the script by chaning the variable ```output_frequency``` in the python file (default = 3600, once per hour).
 
 
 <h4><b>Requires the following imports to be installed</b></h4>
