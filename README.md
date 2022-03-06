@@ -41,6 +41,6 @@ If you receive an error, or the Python window closes immediately, go through the
 <ol>
   <li>Make sure you have installed all neccessary packages with the pip installer.</li>
   <li>Make sure when you launch the Python script, that you are in the correct directory.</li>
-  <li>Make sure you have filled in your nodes in the nodes.json file.</li>
+  <li>Make sure you have filled in your nodes in the nodes.json file correctly (see example nodes file).</li>
   <li>Make sure you launch the python script with by typing 'python data_earnings_checker.py' when in the correct directory.</li>
 </ol>
