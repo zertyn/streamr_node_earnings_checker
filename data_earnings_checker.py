@@ -13,10 +13,13 @@ from datetime import datetime
 import json
 from apscheduler.schedulers.blocking import BlockingScheduler
 from collections import defaultdict
+import warnings
 import pandas as pd
 from tabulate import tabulate
 from colorama import init, Fore, Back, Style
 
+warnings.simplefilter(action='ignore', category=FutureWarning)
+    
 # function to transform timedelta to propper formatting
 def strfdelta(tdelta, fmt):
     d = {"days": tdelta.days}
