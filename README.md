@@ -9,7 +9,7 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 - Optional: add in which interval you would like to loop the script by changing variable ```output_frequency``` in Python file (default = 3600 (seconds), don't recommend going lower than 3600 because the script requests a lot of information).
 
 
-<h4><b>Requires the following imports to be installed</b></h4>
+<h4><b>Uses the following imports/requires the following packages to be installed</b></h4>
 
 - requests
 - datetime
