@@ -1,9 +1,6 @@
 requests
 datetime
-json
 apscheduler
-collections
-warning
 pandas
 tabulate
 colorama
