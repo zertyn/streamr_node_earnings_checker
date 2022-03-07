@@ -31,6 +31,7 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 ```
 git clone https://github.com/zertyn/streamr_node_earnings_checker.git
 cd streamr_node_earnings_checker/
+pip install -r requirments.txt
 python3 data_earnings_checker.py
 ```
 
