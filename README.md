@@ -16,7 +16,7 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 - json
 - apscheduler
 - collections (installed by default on most systems).
-- warnings (to surpress an annoying pandas package warning).
+- warnings (to suppress an annoying pandas package warning).
 - pandas
 - tabulate
 - colorama
