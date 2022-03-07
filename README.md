@@ -1,28 +1,31 @@
 # streamr_node_earnings_checker
-Simple Python script that shows basic statistics of your node earnings.<br>
+Python script that shows statistics of your node earnings (see image for an example of all statistics).<br>
 <b>Help a poor student in need 😁 </b><br>
 Donations are very welcome (DATA, MATIC, ETH, ... everything else available on Polygon): <b>0x720D3842198A21403482C919841B81958B5220e1 </b> (Polygon and Etherium chain)
 <br>
 <h4><b>Only things to change</b></h4>
 
 - Add your node addresses in the ```nodes.json``` file.
-- Optional: add in which interval you would like to loop the script by chaning the variable ```output_frequency``` in the python file (default = 3600, once per hour).
+- Optional: add in which interval you would like to loop the script by changing variable ```output_frequency``` in Python file (default = 3600, don't recommend going lower than 3600 because the script requests a lot of information).
 
 
 <h4><b>Requires the following imports to be installed</b></h4>
 
 - requests
+- datetime
 - json
 - apscheduler
-- datetime (installed by default on most systems).
-
+- collections (installed by default on most systems).
+- pandas
+- tabulate
+- colorama
 
 <h4><b>Sample output</b> <br><br></h4>
 
-![image](https://user-images.githubusercontent.com/38588045/156774623-0d89bf2d-b1cc-4fef-bb6a-02bd0d6118fc.png)
+![image](https://user-images.githubusercontent.com/38588045/157060314-01209893-eb85-4777-bd06-0ae5802643a4.png)
 
 
-<h4><b>How to run (presuming you have installed the required packages via pip already) </b></h4>
+<h4><b>How to run (presuming you have installed the required packages via pip + changed nodes.json) </b></h4>
 
 ```
 git clone https://github.com/zertyn/streamr_node_earnings_checker.git
@@ -40,7 +43,7 @@ If you receive an error, or the Python window closes immediately, go through the
 
 <ol>
   <li>Make sure you have installed all neccessary packages with the pip installer.</li>
-  <li>Make sure when you launch the Python script, that you are in the correct directory.</li>
   <li>Make sure you have filled in your nodes in the nodes.json file correctly (see example nodes file).</li>
+  <li>Make sure when you launch the Python script, that you are in the correct directory.</li>
   <li>Make sure you launch the python script with by typing 'python data_earnings_checker.py' when in the correct directory.</li>
 </ol>
