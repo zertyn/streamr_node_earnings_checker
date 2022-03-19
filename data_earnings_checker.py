@@ -56,7 +56,7 @@ try:
            email_node_offline_interval = 0
     
 except:
-    print('Error - Make sure your data is entered correctly in nodes.json! (check comma\'s etc.)')
+    print('Error - Make sure your data is entered correctly in config.json! (check comma\'s etc.)')
     sys.exit()   
 
 # initalization of basic variables
