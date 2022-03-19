@@ -7,7 +7,7 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 
 - Add your node addresses in the ```config.json``` file.
 - Optional: add your gmail email and extra settings in ```config.json``` to your liking (if you have 2FA gmail account, check this link to make a temporary password: https://support.google.com/accounts/answer/185833?hl=en). Leave the values 0 or false if you don't want emails. 
-- Caution: Only change the time settings if you know what you're doing (don't go under 3600 with any value)! 
+- Caution: Only change the time settings if you know what you're doing (I don't recommend going under 3600 with any value)! 
 
 <h4><b>Uses the following imports/requires the following packages to be installed</b></h4>
 
