@@ -7,7 +7,7 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 
 - Add your node addresses in the ```config.json``` file.
 - Changes settings in ```config.json``` according to your liking (if you have 2FA gmail account, check this link to make a temporary password: https://support.google.com/accounts/answer/185833?hl=en)
-- Only change the settings if you know what you're doing! 
+- Caution: Only change the time settings if you know what you're doing (don't go under 3600 with any value)! 
 
 <h4><b>Uses the following imports/requires the following packages to be installed</b></h4>
 
@@ -19,7 +19,8 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 - warnings (to suppress an annoying pandas package warning).
 - pandas
 - tabulate
-- colorama
+- smtplib
+- email
 
 <h4><b>Sample output</b> <br><br></h4>
 
