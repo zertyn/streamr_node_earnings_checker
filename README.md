@@ -19,7 +19,6 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 - warnings (to suppress an annoying pandas package warning).
 - pandas
 - tabulate
-- smtplib
 - email
 
 <h4><b>Sample output</b> <br><br></h4>
