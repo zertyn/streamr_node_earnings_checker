@@ -3,4 +3,5 @@ datetime
 apscheduler
 pandas
 tabulate
-colorama
+smtplib
+email
