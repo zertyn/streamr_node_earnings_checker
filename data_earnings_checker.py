@@ -16,7 +16,11 @@ from collections import defaultdict
 import warnings
 import pandas as pd
 from tabulate import tabulate
-from colorama import init, Fore, Back, Style
+import sys
+import smtplib
+from os.path import basename
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
     
@@ -27,19 +31,40 @@ def strfdelta(tdelta, fmt):
     d["minutes"], d["seconds"] = divmod(rem, 60)
     return fmt.format(**d)
 
-with open('nodes.json', 'r') as f:
-    addresses = json.load(f)
+try:
+    with open('config.json', 'r') as f:
+        json_dict = json.load(f)
+        addresses = json_dict['nodes']
 
-# optional: EDIT HERE variable script_frequency -> speed with which the script reruns (3600 -> script runs once per hour)
-output_frequency = 3600
+        if(json_dict['repeat_script'] == True):
+            script_interval = json_dict['script_interval']
+        else:
+            script_interval = 0
+            
+        if(json_dict['email_node_status_update'] == True):
+            email_address = json_dict['email_address']
+            email_password = json_dict['email_password']
+            email_node_status_interval = json_dict['email_node_status_interval']   
+        else:
+            email_node_status_interval = 0
+            
+        if(json_dict['email__node_offline_update'] == True):
+            email_address = json_dict['email_address']
+            email_password = json_dict['email_password']
+            email_node_offline_interval = json_dict['email__node_offline_interval']
+        else:
+           email_node_offline_interval = 0
+    
+except:
+    print('Error - Make sure your data is entered correctly in nodes.json! (check comma\'s etc.)')
+    sys.exit()   
 
 # initalization of basic variables
 pricevalue_url = "https://min-api.cryptocompare.com/data/price?fsym=DATA&tsyms=USD"
 rewards_url = "https://brubeck1.streamr.network:3013/datarewards/"
 personalnodes_url = "https://brubeck1.streamr.network:3013/stats/"
 networkstats_url = "https://brubeck1.streamr.network:3013/apy"
-scheduler = BlockingScheduler()
-init()
+online_per_node = [];
 
 # automatically fetches the first reward code datetime from the first node, to check how long you've been mining
 response = rq.get(personalnodes_url + list(addresses.values())[0])
@@ -53,16 +78,17 @@ except:
 
 def obtain_info():
     # (re)create empty variables and lists to store JSON data
-    accumulated_data = 0;
-    paid_data = 0;
-    staked_data = 0;
-    paid_per_node = defaultdict(int);
-    staked_per_node = defaultdict(int);
-    accumulated_per_node = [];
-    online_per_node = [];
-    last_reward_per_node = [];
-    claimpc_per_node = [];
-
+    accumulated_data = 0
+    paid_data = 0
+    staked_data = 0
+    paid_per_node = defaultdict(int)
+    staked_per_node = defaultdict(int)
+    global online_per_node
+    online_per_node = []
+    accumulated_per_node = []
+    last_reward_per_node = []
+    claimpc_per_node = []
+    
     # calculates mining time in days and hours
     mining_time = datetime.now() - mining_start_datetime
     mining_time_formatted = strfdelta(mining_time, "{days} days {hours} hours {minutes} minutes")
@@ -134,9 +160,9 @@ def obtain_info():
                 online_per_node.append("Online")
             elif ((datetime.utcnow() - node_reward_datetime).seconds > 4500 and (
                     datetime.utcnow() - node_reward_datetime).seconds < 9000):
-                online_per_node.append(Back.WHITE + Fore.YELLOW + "Unknown"  + Style.RESET_ALL)
+                online_per_node.append("Unknown")
             else:
-                online_per_node.append(Back.WHITE + Fore.RED + "Offline?" + Style.RESET_ALL)
+                online_per_node.append("Offline?")
 
         except:
             last_reward_per_node.append("No rewards")
@@ -202,46 +228,140 @@ def obtain_info():
         df = df.append(d, ignore_index=True)
     df = df.reindex(columns = column_names)
     
-    # prints all variables into a nice overview
     print('\n############################################ STREAMR NODE EARNINGS ###########################################')
-
     print(f'############################################# {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ############################################')
     print(f'\n                                Total time mined: {mining_time_formatted}')
-    print(f'                                                Total nodes: {len(addresses)}')
-    
-    
+    print(f'                                                Total nodes: {len(addresses)}')        
     print('\n__________________________________________________ REVENUE ___________________________________________________')
     print(f'\n                                   Total revenue        {round(accumulated_data, 2)} DATA / ${rev_total}')
-    print(f'                                   Total staked         {round(staked_data, 2)} DATA / ${round(staked_data * coin_value, 2)}\n')
-    
+    print(f'                                   Total staked         {round(staked_data, 2)} DATA / ${round(staked_data * coin_value, 2)}\n')   
     print(f'                                   Received revenue     {round(paid_data, 2)} DATA / ${rev_received} ')
-    print(f'                                   Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / ${round(rev_total - rev_received, 2)}\n')
-
-    
+    print(f'                                   Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / ${round(rev_total - rev_received, 2)}\n')    
     print(f'                              Average  | revenue per hour: {round(rev_hour / coin_value, 2)} DATA / ${rev_hour}')
     print(f'                               based   | revenue per day:  {round(rev_day / coin_value, 2)} DATA / ${rev_day}\n')
-
     print(f'                               Node    | revenue per hour: {round(node_rev_hour / coin_value, 2)} DATA / ${node_rev_hour}')
     print(f'                               based   | revenue per day:  {round(node_rev_day / coin_value, 2)} DATA / ${node_rev_day}')
-
     print('\n_________________________________________________ NODE STATS _________________________________________________\n')
-
     print(tabulate(df, headers= column_names, tablefmt='fancy_grid', showindex=False))
-
     print('\n__________________________________________________ ESTIMATES _________________________________________________\n')
-
     print(f'                               Average  | monthly revenue: {round(est_rev_month / coin_value, 2)} DATA / ${est_rev_month}')
     print(f'                                based   | yearly revenue:  {round(est_rev_year / coin_value, 2)} DATA / ${est_rev_year}\n')
-
     print(f'                                Node    | monthly revenue: {round(node_est_rev_month / coin_value, 2)} DATA / ${node_est_rev_month}')
     print(f'                                based   | yearly revenue:  {round(node_est_rev_year / coin_value, 2)} DATA / ${node_est_rev_year}')
-
     print(f'\n############################ APR: {apr}% ######################### APY: {apy}% #############################')
     print(f'############################################ DATA VALUE: ${coin_value} #############################################')
+    
+    with open('log.txt', 'w') as f:
+        original_stdout = sys.stdout
+        sys.stdout = f # Change the standard output to the file.
+        print('\n############################################ STREAMR NODE EARNINGS ###########################################')
+        print(f'############################################# {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ############################################')
+        print(f'\n                                Total time mined: {mining_time_formatted}')
+        print(f'                                                Total nodes: {len(addresses)}')    
+        print('\n__________________________________________________ REVENUE ___________________________________________________')
+        print(f'\n                                   Total revenue        {round(accumulated_data, 2)} DATA / ${rev_total}')
+        print(f'                                   Total staked         {round(staked_data, 2)} DATA / ${round(staked_data * coin_value, 2)}\n')   
+        print(f'                                   Received revenue     {round(paid_data, 2)} DATA / ${rev_received} ')
+        print(f'                                   Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / ${round(rev_total - rev_received, 2)}\n')    
+        print(f'                              Average  | revenue per hour: {round(rev_hour / coin_value, 2)} DATA / ${rev_hour}')
+        print(f'                               based   | revenue per day:  {round(rev_day / coin_value, 2)} DATA / ${rev_day}\n')
+        print(f'                               Node    | revenue per hour: {round(node_rev_hour / coin_value, 2)} DATA / ${node_rev_hour}')
+        print(f'                               based   | revenue per day:  {round(node_rev_day / coin_value, 2)} DATA / ${node_rev_day}')
+        print('\n_________________________________________________ NODE STATS _________________________________________________\n')
+        f.write(tabulate(df, headers= column_names, showindex=False))
+        print('\n__________________________________________________ ESTIMATES _________________________________________________\n')
+        print(f'                               Average  | monthly revenue: {round(est_rev_month / coin_value, 2)} DATA / ${est_rev_month}')
+        print(f'                                based   | yearly revenue:  {round(est_rev_year / coin_value, 2)} DATA / ${est_rev_year}\n')
+        print(f'                                Node    | monthly revenue: {round(node_est_rev_month / coin_value, 2)} DATA / ${node_est_rev_month}')
+        print(f'                                based   | yearly revenue:  {round(node_est_rev_year / coin_value, 2)} DATA / ${node_est_rev_year}')
+        print(f'\n############################ APR: {apr}% ######################### APY: {apy}% #############################')
+        print(f'############################################ DATA VALUE: ${coin_value} ############################################')        
+        sys.stdout = original_stdout
+        
+def scheduler():
+    # loops through obtain_info function once per set interval in variable script_frequency
+    scheduler = BlockingScheduler()
+    obtain_info()
+    try:
+        # adds needed jobs to the scheduler (configured in the json file)
+        if(script_interval) != 0: 
+            scheduler.add_job(obtain_info, 'interval', seconds=script_interval)
+        
+        if(email_node_status_interval) != 0: 
+            scheduler.add_job(status_update, 'interval', seconds=email_node_status_interval)
+            status_update()
+        
+        if(email_node_offline_interval) != 0: 
+            scheduler.add_job(offline_update, 'interval', seconds=email_node_offline_interval)
+            offline_update()
+        
+    # starts scheduler if any intervals are toggled
+        if(script_interval != 0 or email_node_status_interval != 0 or email_node_offline_interval != 0):
+            scheduler.start()
 
-# runs the function once on startup, after which the scheduler takes over
-obtain_info()
+    except Exception as e: print(e)
+    
+def status_update():
+    try:
+        # setup the MIME
+        message = MIMEMultipart()
+        message['From'] = email_address
+        message['To'] = email_address
 
-# loops through obtain_info function once per set interval in variable script_frequency
-scheduler.add_job(obtain_info, 'interval', seconds=output_frequency)
-scheduler.start()
+        with open('log.txt', "rb") as file:
+            part = MIMEApplication(
+                file.read(),
+                Name=basename('log.txt')
+                )
+        # after the file is closed
+            part['Content-Disposition'] = 'attachment; filename="%s"' % basename('log.txt')
+            message.attach(part)
+        
+        # the subject 
+        message['Subject'] = f'Node earnings overview - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'   
+        # creates SMTP session for sending the mail
+        # uses gmail with port
+        session = smtplib.SMTP('smtp.gmail.com', 587) 
+        # enables security
+        session.starttls()         
+        # logs in  with mail_id and password (use https://support.google.com/accounts/answer/185833?hl=en if password is incorrect)        
+        session.login(email_address, email_password) 
+        text = message.as_string()
+        session.sendmail(email_address, email_address, text)
+        session.quit()
+        
+    except Exception as e: print(e)
+
+def offline_update():
+    try:
+        if ("Offline?" in online_per_node):
+            message = MIMEMultipart()
+            message['From'] = email_address
+            message['To'] = email_address
+
+            with open('log.txt', "rb") as file:
+                part = MIMEApplication(
+                    file.read(),
+                    Name=basename('log.txt')
+                    )
+                # after the file is closed
+                part['Content-Disposition'] = 'attachment; filename="%s"' % basename('log.txt')
+                message.attach(part)
+        
+            message['Subject'] = f'One or more nodes may be offline  - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'   #The subject line
+            # creates SMTP session for sending the mail
+            # uses gmail with port
+            session = smtplib.SMTP('smtp.gmail.com', 587) 
+            # enables security
+            session.starttls()         
+            # logs in  with mail_id and password (use https://support.google.com/accounts/answer/185833?hl=en if password is incorrect)        
+            session.login(email_address, email_password) 
+            text = message.as_string()
+            session.sendmail(email_address, email_address, text)
+            session.quit()
+    
+    except Exception as e: print(e)
+
+# runs the obtain_info function once on startup, after which the scheduler takes over
+scheduler()
+
