@@ -5,9 +5,9 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 <br>
 <h4><b>Only things to change</b></h4>
 
-- Add your node addresses in the ```nodes.json``` file.
-- Optional: add in which interval you would like to loop the script by changing variable ```output_frequency``` in Python file (default = 3600 (seconds), don't recommend going lower than 3600 because the script requests a lot of information).
-
+- Add your node addresses in the ```config.json``` file.
+- Changes settings in ```config.json``` according to your liking (if you have 2FA gmail account, check this link to make a temporary password: https://support.google.com/accounts/answer/185833?hl=en)
+- Only change the settings if you know what you're doing! 
 
 <h4><b>Uses the following imports/requires the following packages to be installed</b></h4>
 
@@ -26,7 +26,7 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 ![image](https://user-images.githubusercontent.com/38588045/157060314-01209893-eb85-4777-bd06-0ae5802643a4.png)
 
 
-<h4><b>How to run (presuming you have installed the required packages via pip + changed nodes.json) </b></h4>
+<h4><b>How to run in Python (presuming you have installed the required packages via pip + changed nodes.json) </b></h4>
 
 ```
 git clone https://github.com/zertyn/streamr_node_earnings_checker.git
@@ -35,17 +35,14 @@ pip install -r requirements.txt
 python3 data_earnings_checker.py
 ```
 
-<h4><b>Want this code in .exe format? </b><br></h4>
-Follow the following link (Make sure the nodes.json file is in the same folder as the .exe file): <br>
-https://towardsdatascience.com/how-to-easily-convert-a-python-script-to-an-executable-file-exe-4966e253c7e9
-
 <br>
 <h4> Possible solutions to errors </h4>
 If you receive an error, or the Python window closes immediately, go through the following steps:
 
 <ol>
   <li>Make sure you have installed all neccessary packages with the pip installer.</li>
-  <li>Make sure you have filled in your nodes in the nodes.json file correctly (see example nodes file).</li>
-  <li>Make sure when you launch the Python script, that you are in the correct directory.</li>
-  <li>Make sure you launch the python script with by typing 'python data_earnings_checker.py' when in the correct directory.</li>
+  <li>Make sure you have filled in your information in the config.json file correctly (see example nodes file).</li>
+  <li>Make sure you have generated a temporary password for your gmail account if you have 2FA enabled: https://support.google.com/accounts/answer/185833?hl=en.</li>
+  <li>if you launch the script via Python: make sure when you launch the Python script, that you are in the correct directory.</li>
+  <li>if you launch the script via the .exe: make sure the config.json is in the same directory as the .exe file </li>
 </ol>
