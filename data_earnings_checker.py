@@ -48,10 +48,10 @@ try:
         else:
             email_node_status_interval = 0
             
-        if(json_dict['email__node_offline_update'] == True):
+        if(json_dict['email_node_offline_update'] == True):
             email_address = json_dict['email_address']
             email_password = json_dict['email_password']
-            email_node_offline_interval = json_dict['email__node_offline_interval']
+            email_node_offline_interval = json_dict['email_node_offline_interval']
         else:
            email_node_offline_interval = 0
     
