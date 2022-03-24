@@ -3,8 +3,8 @@
     "script_interval": 3600,
     "email_node_status_update": false,
     "email_node_status_interval": 86400,
-    "email__node_offline_update": false,
-    "email__node_offline_interval": 10800,
+    "email_node_offline_update": false,
+    "email_node_offline_interval": 10800,
     "email_address": "email_name@gmail.com", 
     "email_password": "xxxxxxxxx -(generate with link in README if you have 2FA account)", 
     "nodes": {
