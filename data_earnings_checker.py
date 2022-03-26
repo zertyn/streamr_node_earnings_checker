@@ -280,7 +280,7 @@ def obtain_info():
         
 def scheduler():
     # loops through obtain_info function once per set interval in variable script_frequency
-    scheduler = BlockingScheduler()
+    scheduler = BlockingScheduler(job_defaults={'misfire_grace_time': 15*60})
     obtain_info()
     try:
         # adds needed jobs to the scheduler (configured in the json file)
