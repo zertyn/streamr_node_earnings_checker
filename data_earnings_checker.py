@@ -21,6 +21,7 @@ import smtplib
 from os.path import basename
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
+from forex_python.converter import CurrencyCodes
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
     
@@ -35,6 +36,7 @@ try:
     with open('config.json', 'r') as f:
         json_dict = json.load(f)
         addresses = json_dict['nodes']
+        currency_type = str(json_dict['preferred_currency_type'])
 
         if(json_dict['repeat_script'] == True):
             script_interval = json_dict['script_interval']
@@ -55,16 +57,15 @@ try:
         else:
            email_node_offline_interval = 0
     
-except:
-    print('Error - Make sure your data is entered correctly in config.json! (check comma\'s etc.)')
-    sys.exit()   
+except Exception as e: print(e)
 
 # initalization of basic variables
-pricevalue_url = "https://min-api.cryptocompare.com/data/price?fsym=DATA&tsyms=USD"
+pricevalue_url = "https://min-api.cryptocompare.com/data/price?fsym=DATA&tsyms=" + currency_type
 rewards_url = "https://brubeck1.streamr.network:3013/datarewards/"
 personalnodes_url = "https://brubeck1.streamr.network:3013/stats/"
 networkstats_url = "https://brubeck1.streamr.network:3013/apy"
-online_per_node = [];
+online_per_node = []
+c = CurrencyCodes()
 
 # automatically fetches the first reward code datetime from the first node, to check how long you've been mining
 response = rq.get(personalnodes_url + list(addresses.values())[0])
@@ -119,15 +120,14 @@ def obtain_info():
 
             response = rq.post('https://api.thegraph.com/subgraphs/name/streamr-dev/data-on-polygon', json=json_data)
             json_data = json.loads(response.text)
-            for data in json_data["data"]:
-                paid_data += round(float(json_data["data"]["erc20Transfers"][0]["value"]), 2)
-                paid_per_node[key] += round(float(json_data["data"]["erc20Transfers"][0]["value"]), 2)
+            for index, data in enumerate(json_data["data"]["erc20Transfers"]):
+                paid_data += round(float(json_data["data"]["erc20Transfers"][index]["value"]), 2)
+                paid_per_node[key] += round(float(json_data["data"]["erc20Transfers"][index]["value"]), 2)
                 
-        except:
-            for data in json_data["data"]:
-                paid_data += 0
-                paid_per_node[key] += 0
-               
+        except:           
+            paid_data += 0
+            paid_per_node[key] += 0
+
         # get amount of staked data per node (to do)       
         try:
             json_data = {
@@ -141,9 +141,8 @@ def obtain_info():
                 staked_per_node[key] += round(float(json_data["data"]["erc20Balances"][0]["value"]), 2)
         
         except:
-            for data in json_data["data"]:
-                staked_data += 0
-                staked_per_node[key] += 0
+            staked_data += 0
+            staked_per_node[key] += 0
         
         # get claimed rewards and reward datetime per node
         response = rq.get(personalnodes_url + value)
@@ -186,12 +185,21 @@ def obtain_info():
     apr = round(float(json_data["24h-APR"]), 2)
 
     # get APR and APY
-    response = rq.get(pricevalue_url)
-    json_data = json.loads(response.text)
-    coin_value = float(json_data["USD"])
-    rev_total = round(coin_value * accumulated_data, 2)
-    rev_received = round(coin_value * paid_data, 2)
-
+    try:
+        response = rq.get(pricevalue_url)
+        json_data = json.loads(response.text)
+        coin_value = float(json_data[currency_type])
+        rev_total = round(coin_value * accumulated_data, 2)
+        rev_received = round(coin_value * paid_data, 2)
+        
+    except:
+        print("The currency type filled in the config file is invalid, using USD instead")
+        response = rq.get("https://min-api.cryptocompare.com/data/price?fsym=DATA&tsyms=USD")    
+        json_data = json.loads(response.text)
+        coin_value = float(json_data["USD"])
+        rev_total = round(coin_value * accumulated_data, 2)
+        rev_received = round(coin_value * paid_data, 2)
+        
     # average revenue per dag and hour, calculated from total revenue up to current date
     rev_day = round(rev_total / mining_days, 2)
     rev_hour = round(rev_total / (mining_days * 24 + mining_hours), 2)
@@ -217,10 +225,10 @@ def obtain_info():
     
     for index, address in enumerate(addresses):
         d = {'Name': "Node "+ str(index + 1), 
-             'Gathered': "DATA: "+ str(round(accumulated_per_node[index],2)) + "\nUSD$: " + str(round(accumulated_per_node[index] * coin_value, 2)), 
-             'Paid': "DATA: "+ str(round(paid_per_node[address],2))  + "\nUSD$: " + str(round(paid_per_node[address] * coin_value, 2)), 
-             'Unpaid': "DATA: "+ str(round((accumulated_per_node[index] - paid_per_node[address]),2))  + "\nUSD$: " + str(round((accumulated_per_node[index] - paid_per_node[address]) * coin_value, 2)),
-             'Staked': "DATA: "+ str(round(staked_per_node[address],2)) + "\nUSD$: " + str(round(staked_per_node[address] * coin_value, 2)),  
+             'Gathered': "DATA: "+ str(round(accumulated_per_node[index],2)) + "\n" + currency_type + c.get_symbol(currency_type) + ": " + str(round(accumulated_per_node[index] * coin_value, 2)), 
+             'Paid': "DATA: "+ str(round(paid_per_node[address],2))  + "\n" + currency_type + c.get_symbol(currency_type) + ": " + str(round(paid_per_node[address] * coin_value, 2)), 
+             'Unpaid': "DATA: "+ str(round((accumulated_per_node[index] - paid_per_node[address]),2))  + "\n" + currency_type + c.get_symbol(currency_type) + ": " + str(round((accumulated_per_node[index] - paid_per_node[address]) * coin_value, 2)),
+             'Staked': "DATA: "+ str(round(staked_per_node[address],2)) + "\n" + currency_type + c.get_symbol(currency_type) + ": " + str(round(staked_per_node[address] * coin_value, 2)),  
              'Status': online_per_node[index],
              'Last reward': last_reward_per_node[index], 
              'Claims': claimpc_per_node[index]}
@@ -233,23 +241,23 @@ def obtain_info():
     print(f'\n                                Total time mined: {mining_time_formatted}')
     print(f'                                                Total nodes: {len(addresses)}')        
     print('\n__________________________________________________ REVENUE ___________________________________________________')
-    print(f'\n                                   Total revenue        {round(accumulated_data, 2)} DATA / ${rev_total}')
-    print(f'                                   Total staked         {round(staked_data, 2)} DATA / ${round(staked_data * coin_value, 2)}\n')   
-    print(f'                                   Received revenue     {round(paid_data, 2)} DATA / ${rev_received} ')
-    print(f'                                   Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / ${round(rev_total - rev_received, 2)}\n')    
-    print(f'                              Average  | revenue per hour: {round(rev_hour / coin_value, 2)} DATA / ${rev_hour}')
-    print(f'                               based   | revenue per day:  {round(rev_day / coin_value, 2)} DATA / ${rev_day}\n')
-    print(f'                               Node    | revenue per hour: {round(node_rev_hour / coin_value, 2)} DATA / ${node_rev_hour}')
-    print(f'                               based   | revenue per day:  {round(node_rev_day / coin_value, 2)} DATA / ${node_rev_day}')
+    print(f'\n                                   Total revenue        {round(accumulated_data, 2)} DATA / {c.get_symbol(currency_type) + str(rev_total)}')
+    print(f'                                   Total staked         {round(staked_data, 2)} DATA / {c.get_symbol(currency_type) + str(round(staked_data * coin_value, 2))}\n')   
+    print(f'                                   Received revenue     {round(paid_data, 2)} DATA / {c.get_symbol(currency_type) + str(rev_received)} ')
+    print(f'                                   Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / {c.get_symbol(currency_type) + str(round(rev_total - rev_received, 2))}\n')    
+    print(f'                              Average  | revenue per hour: {round(rev_hour / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(rev_hour)}')
+    print(f'                               based   | revenue per day:  {round(rev_day / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(rev_day)}\n')
+    print(f'                               Node    | revenue per hour: {round(node_rev_hour / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(node_rev_hour)}')
+    print(f'                               based   | revenue per day:  {round(node_rev_day / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(node_rev_day)}')
     print('\n_________________________________________________ NODE STATS _________________________________________________\n')
     print(tabulate(df, headers= column_names, tablefmt='fancy_grid', showindex=False))
     print('\n__________________________________________________ ESTIMATES _________________________________________________\n')
-    print(f'                               Average  | monthly revenue: {round(est_rev_month / coin_value, 2)} DATA / ${est_rev_month}')
-    print(f'                                based   | yearly revenue:  {round(est_rev_year / coin_value, 2)} DATA / ${est_rev_year}\n')
-    print(f'                                Node    | monthly revenue: {round(node_est_rev_month / coin_value, 2)} DATA / ${node_est_rev_month}')
-    print(f'                                based   | yearly revenue:  {round(node_est_rev_year / coin_value, 2)} DATA / ${node_est_rev_year}')
+    print(f'                               Average  | monthly revenue: {round(est_rev_month / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(est_rev_month)}')
+    print(f'                                based   | yearly revenue:  {round(est_rev_year / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(est_rev_year)}\n')
+    print(f'                                Node    | monthly revenue: {round(node_est_rev_month / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(node_est_rev_month)}')
+    print(f'                                based   | yearly revenue:  {round(node_est_rev_year / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(node_est_rev_year)}')
     print(f'\n############################ APR: {apr}% ######################### APY: {apy}% #############################')
-    print(f'############################################ DATA VALUE: ${coin_value} #############################################')
+    print(f'############################################ DATA VALUE: {c.get_symbol(currency_type) + str(coin_value)} #############################################')
     
     with open('log.txt', 'w') as f:
         original_stdout = sys.stdout
@@ -257,25 +265,25 @@ def obtain_info():
         print('\n############################################ STREAMR NODE EARNINGS ###########################################')
         print(f'############################################# {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ############################################')
         print(f'\n                                Total time mined: {mining_time_formatted}')
-        print(f'                                                Total nodes: {len(addresses)}')    
+        print(f'                                                Total nodes: {len(addresses)}')        
         print('\n__________________________________________________ REVENUE ___________________________________________________')
         print(f'\n                                   Total revenue        {round(accumulated_data, 2)} DATA / ${rev_total}')
-        print(f'                                   Total staked         {round(staked_data, 2)} DATA / ${round(staked_data * coin_value, 2)}\n')   
-        print(f'                                   Received revenue     {round(paid_data, 2)} DATA / ${rev_received} ')
-        print(f'                                   Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / ${round(rev_total - rev_received, 2)}\n')    
-        print(f'                              Average  | revenue per hour: {round(rev_hour / coin_value, 2)} DATA / ${rev_hour}')
-        print(f'                               based   | revenue per day:  {round(rev_day / coin_value, 2)} DATA / ${rev_day}\n')
-        print(f'                               Node    | revenue per hour: {round(node_rev_hour / coin_value, 2)} DATA / ${node_rev_hour}')
-        print(f'                               based   | revenue per day:  {round(node_rev_day / coin_value, 2)} DATA / ${node_rev_day}')
+        print(f'                                   Total staked         {round(staked_data, 2)} DATA / {c.get_symbol(currency_type) + str(round(staked_data * coin_value, 2))}\n')   
+        print(f'                                   Received revenue     {round(paid_data, 2)} DATA / {c.get_symbol(currency_type) + str(rev_received)} ')
+        print(f'                                   Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / {c.get_symbol(currency_type) + str(round(rev_total - rev_received, 2))}\n')    
+        print(f'                              Average  | revenue per hour: {round(rev_hour / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(rev_hour)}')
+        print(f'                               based   | revenue per day:  {round(rev_day / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(rev_day)}\n')
+        print(f'                               Node    | revenue per hour: {round(node_rev_hour / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(node_rev_hour)}')
+        print(f'                               based   | revenue per day:  {round(node_rev_day / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(node_rev_day)}')
         print('\n_________________________________________________ NODE STATS _________________________________________________\n')
-        f.write(tabulate(df, headers= column_names, showindex=False))
+        print(tabulate(df, headers= column_names, tablefmt='fancy_grid', showindex=False))
         print('\n__________________________________________________ ESTIMATES _________________________________________________\n')
-        print(f'                               Average  | monthly revenue: {round(est_rev_month / coin_value, 2)} DATA / ${est_rev_month}')
-        print(f'                                based   | yearly revenue:  {round(est_rev_year / coin_value, 2)} DATA / ${est_rev_year}\n')
-        print(f'                                Node    | monthly revenue: {round(node_est_rev_month / coin_value, 2)} DATA / ${node_est_rev_month}')
-        print(f'                                based   | yearly revenue:  {round(node_est_rev_year / coin_value, 2)} DATA / ${node_est_rev_year}')
+        print(f'                               Average  | monthly revenue: {round(est_rev_month / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(est_rev_month)}')
+        print(f'                                based   | yearly revenue:  {round(est_rev_year / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(est_rev_year)}\n')
+        print(f'                                Node    | monthly revenue: {round(node_est_rev_month / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(node_est_rev_month)}')
+        print(f'                                based   | yearly revenue:  {round(node_est_rev_year / coin_value, 2)} DATA / {c.get_symbol(currency_type) + str(node_est_rev_year)}')
         print(f'\n############################ APR: {apr}% ######################### APY: {apy}% #############################')
-        print(f'############################################ DATA VALUE: ${coin_value} ############################################')        
+        print(f'############################################ DATA VALUE: {c.get_symbol(currency_type) + str(coin_value)} #############################################')
         sys.stdout = original_stdout
         
 def scheduler():

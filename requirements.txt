@@ -4,3 +4,4 @@ apscheduler
 pandas
 tabulate
 email
+forex_python
