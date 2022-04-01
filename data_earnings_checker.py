@@ -264,7 +264,7 @@ def obtain_info():
    
     except Exception as e: print(e)
     
-    with open('log.txt', 'w') as f:
+    with open('log.txt', 'w', encoding="utf-8") as f:
         original_stdout = sys.stdout
         sys.stdout = f # Change the standard output to the file.
         print('\n############################################ STREAMR NODE EARNINGS ###########################################')
