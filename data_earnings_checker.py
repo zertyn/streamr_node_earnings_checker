@@ -6,7 +6,7 @@ Last update on Mon Mar 7 16:12:15 2022
 
 @author: Zertyn
 Intellectual property of Zertyn
-Donations are very welcome (DATA, MATIC, ETH): 0x720D3842198A21403482C919841B81958B5220e1 (Polygon and Etherium chain)
+Donations are very welcome (DATA, MATIC, ETH): 0xfdE5EbC9A5E3B770359eF8e4155d08FB2fd3aB92 (Polygon and Etherium chain)
 """
 
 import requests as rq
