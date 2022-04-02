@@ -17,7 +17,7 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 - pandas
 - tabulate
 - email
-- forex_python
+- currency_symbols
 
 
 <h4><b>Sample output</b> <br><br></h4>
