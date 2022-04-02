@@ -1,7 +1,7 @@
 # Streamr Node Earnings Checker
 Python script that shows statistics of your node earnings (see image for an example of all statistics).<br>
 <br><b>Help a poor student in need 😁 </b><br>
-Donations are very welcome (DATA, MATIC, ETH, ... everything else available on Polygon): <b>0xfdE5EbC9A5E3B770359eF8e4155d08FB2fd3aB92 </b> (Polygon and Etherium chain)
+Donations are very welcome (DATA, MATIC, ETH, ... everything else available on Polygon): <b>0xfdE5EbC9A5E3B770359eF8e4155d08FB2fd3aB92 </b> (Polygon and Ethereum chain)
 <br>
 <h4><b>Only things to change</b></h4>
 
