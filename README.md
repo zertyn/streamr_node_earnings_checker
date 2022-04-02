@@ -25,7 +25,7 @@ Donations are very welcome (DATA, MATIC, ETH, ... everything else available on P
 ![image](https://user-images.githubusercontent.com/38588045/157060314-01209893-eb85-4777-bd06-0ae5802643a4.png)
 
 
-<h4><b>How to run in Python (presuming you have installed the required packages via pip + changed config.json) </b></h4>
+<h4><b>How to run in Python (presuming you have changed the config.json) </b></h4>
 
 ```
 git clone https://github.com/zertyn/streamr_node_earnings_checker.git
