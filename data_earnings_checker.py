@@ -203,6 +203,11 @@ def obtain_info():
         rev_received = round(coin_value * paid_data, 2)
         
     # average revenue per dag and hour, calculated from total revenue up to current date
+    if(mining_days == 0):
+    rev_day = round(rev_total / mining_hours, 2)
+    rev_hour = round(rev_total / mining_hours, 2)
+    
+    else:
     rev_day = round(rev_total / mining_days, 2)
     rev_hour = round(rev_total / (mining_days * 24 + mining_hours), 2)
 
