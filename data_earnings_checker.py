@@ -277,7 +277,7 @@ def obtain_info():
         print(f'\n                                Total time mined: {mining_time_formatted}')
         print(f'                                                Total nodes: {len(addresses)}')        
         print('\n__________________________________________________ REVENUE ___________________________________________________')
-        print(f'\n                                   Total revenue        {round(accumulated_data, 2)} DATA / ${rev_total}')
+        print(f'\n                                   Total revenue        {round(accumulated_data, 2)} DATA / {currency_symbol + str(rev_total)}')
         print(f'                                   Total staked         {round(staked_data, 2)} DATA / {currency_symbol + str(round(staked_data * coin_value, 2))}\n')   
         print(f'                                   Received revenue     {round(paid_data, 2)} DATA / {currency_symbol + str(rev_received)} ')
         print(f'                                   Revenue to receive   {round(accumulated_data - paid_data, 2)} DATA / {currency_symbol + str(round(rev_total - rev_received, 2))}\n')    
