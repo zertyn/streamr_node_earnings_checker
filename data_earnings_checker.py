@@ -311,7 +311,7 @@ def scheduler():
     # starts scheduler if any intervals are toggled
         if(script_interval != 0 or email_node_status_interval != 0 or email_node_offline_interval != 0):
             scheduler.start()
-
+	    
     except Exception as e: print(e)
     
 def status_update():
@@ -347,34 +347,34 @@ def status_update():
 
 def offline_update():
     try:
-        if ("Offline?" in online_per_node):
-            message = MIMEMultipart()
-            message['From'] = email_address
-            message['To'] = email_address
+        with open('log.txt', encoding="utf-8") as f:
+            if 'Offline?' in f.read():
+                message = MIMEMultipart()
+                message['From'] = email_address
+                message['To'] = email_address
 
-            with open('log.txt', "rb") as file:
-                part = MIMEApplication(
-                    file.read(),
-                    Name=basename('log.txt')
-                    )
-                # after the file is closed
-                part['Content-Disposition'] = 'attachment; filename="%s"' % basename('log.txt')
-                message.attach(part)
+                with open('log.txt', "rb") as file:
+                    part = MIMEApplication(
+                        file.read(),
+                        Name=basename('log.txt')
+                        )
+                    # after the file is closed
+                    part['Content-Disposition'] = 'attachment; filename="%s"' % basename('log.txt')
+                    message.attach(part)
         
-            message['Subject'] = f'One or more nodes may be offline  - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'   #The subject line
-            # creates SMTP session for sending the mail
-            # uses gmail with port
-            session = smtplib.SMTP('smtp.gmail.com', 587) 
-            # enables security
-            session.starttls()         
-            # logs in  with mail_id and password (use https://support.google.com/accounts/answer/185833?hl=en if password is incorrect)        
-            session.login(email_address, email_password) 
-            text = message.as_string()
-            session.sendmail(email_address, email_address, text)
-            session.quit()
+                message['Subject'] = f'One or more nodes may be offline  - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'   #The subject line
+                # creates SMTP session for sending the mail
+                # uses gmail with port
+                session = smtplib.SMTP('smtp.gmail.com', 587) 
+                # enables security
+                session.starttls()         
+                # logs in  with mail_id and password (use https://support.google.com/accounts/answer/185833?hl=en if password is incorrect)        
+                session.login(email_address, email_password) 
+                text = message.as_string()
+                session.sendmail(email_address, email_address, text)
+                session.quit()
     
     except Exception as e: print(e)
 
 # runs the obtain_info function once on startup, after which the scheduler takes over
 scheduler()
-
