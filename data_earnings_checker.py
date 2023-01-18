@@ -6,7 +6,7 @@ Last update on Mon Mar 7 16:12:15 2022
 
 @author: Zertyn
 Intellectual property of Zertyn
-Donations are very welcome (DATA, MATIC, ETH): 0xfdE5EbC9A5E3B770359eF8e4155d08FB2fd3aB92 (Polygon and Etherium chain)
+Donations are very welcome (DATA or MATIC): 0xfdE5EbC9A5E3B770359eF8e4155d08FB2fd3aB92 (Polygon chain)
 """
 
 import requests as rq
@@ -78,7 +78,7 @@ try:
     mining_start_datetime = datetime.strptime(json_data["claimedRewardCodes"][0]["claimTime"][:-5].replace("T", " "),
                                           "%Y-%m-%d %H:%M:%S")
 except:
-    print ('Make sure to enter your node addresses correctly in nodes.json!')
+    print ('Make sure to enter your node addresses correctly in config.json!')
     exit()
 
 def obtain_info():
