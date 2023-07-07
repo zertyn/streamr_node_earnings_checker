@@ -6,7 +6,9 @@ Last update on Mon Mar 7 16:12:15 2022
 
 @author: Zertyn
 Intellectual property of Zertyn
-Donations are very welcome (DATA or MATIC): 0xfdE5EbC9A5E3B770359eF8e4155d08FB2fd3aB92 (Polygon chain)
+Donations are very welcome:
+- (MATIC):  0x4CC2c2A32e38445d6a91A3eD69D1fdC6F6Ec989D (Polygon chain)
+- (BTC):  bc1q65sme8mf4q32qntksa93ke3x7znhx894e63gq0
 """
 
 import requests as rq
